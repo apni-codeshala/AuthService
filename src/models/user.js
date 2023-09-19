@@ -34,6 +34,12 @@ module.exports = (sequelize, DataTypes) => {
       validate: {
         len: [3, 300]
       }
+    },
+    isEmailVerified:
+    {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     }
   }, {
     sequelize,

@@ -1,9 +1,11 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const Verifier = require('email-verifier')
 
-const { JWT_KEY } = require('../config/serverConfig')
+const { JWT_KEY } = require('../config/serverConfig');
 const UserRepository = require('../repository/user-repository');
-const { use } = require('../routes');
+
+const verifier = new Verifier("at_t9Ypf4BWff7mcEc0ayTsGlZe5xWaY");
 
 class UserService {
 
@@ -13,11 +15,18 @@ class UserService {
 
     async create(data) {
         try {
-            const user = await this.userRepository.create(data);
+            const verifyEmail = await this.emailVerification(data.email);
+            let isEmailVerify;
+            console.log(verifyEmail);
+            if(verifyEmail.smtpCheck == 'true') {
+                isEmailVerify = true
+            }
+            const user = await this.userRepository.create({...data, isEmailVerified: isEmailVerify});
             return user;
         } catch (error) {
             console.log("Something went wrong inside service layer");
-            throw error;
+            console.log(error);
+            throw {error};
         }
     }
 
@@ -94,6 +103,18 @@ class UserService {
             throw error;
         }
     }
+
+    async emailVerification(email) {
+    return new Promise((resolve, reject) => {
+      verifier.verify(email, (error, data) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  }
 
 }
 
