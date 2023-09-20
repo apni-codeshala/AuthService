@@ -10,6 +10,32 @@ const vlaidateUserAuth = (req, res, next) => {
     next();
 }
 
+const validateIsAdminRequest = (req, res, next) => {
+    if(!req.body.id) {
+        return res.status(400).json({
+            succes: false,
+            data: {},
+            err: 'User id not given',
+            message: 'Something went wrong'
+        });
+    }
+    next();
+}
+
+const validateIsAirlineBussinessRequest = (req, res, next) => {
+    if(!req.body.id) {
+        return res.status(400).json({
+            succes: false,
+            data: {},
+            err: 'User id not given',
+            message: 'Something went wrong'
+        });
+    }
+    next();
+}
+
 module.exports = {
-    vlaidateUserAuth
+    vlaidateUserAuth,
+    validateIsAdminRequest,
+    validateIsAirlineBussinessRequest
 }

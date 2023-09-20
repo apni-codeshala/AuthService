@@ -1,5 +1,4 @@
-const { User } = require('../models/index');
-const user = require('../models/user');
+const { User, Role } = require('../models/index');
 
 class UserRepository {
 
@@ -37,6 +36,36 @@ class UserRepository {
         }
     }
 
+    async isAdmin(userId) {
+        try {
+            const user = await User.findByPk(userId);
+            const adminRole = await Role.findOne({
+                where: {
+                    name: 'ADMIN'
+                }
+            });
+            return user.hasRole(adminRole);
+        } catch (error) {
+            console.log("Something went wrong on repository layer");
+            throw error;
+        }
+    }
+
+    async isAirlineBussiness(userId) {
+        try {
+            const user = await User.findByPk(userId);
+            const adminRole = await Role.findOne({
+                where: {
+                    name: 'AIRLINE_BUSSINESS'
+                }
+            });
+            return user.hasRole(adminRole);
+        } catch (error) {
+            console.log("Something went wrong on repository layer");
+            throw error;
+        }
+    }
+    
 }
 
 module.exports = UserRepository;
