@@ -1,4 +1,7 @@
+const { StatusCodes } = require('http-status-codes');
+
 const { User, Role } = require('../models/index');
+const { AppError } = require('../utils/errors/index')
 
 class UserRepository {
 
@@ -7,8 +10,12 @@ class UserRepository {
             const user = await User.create(data);
             return user;
         } catch (error) {
-            console.log("Something went wrong inside repository layer");
-            throw {error};
+            throw new AppError(
+                'RepositoryError',
+                'Cannot create user',
+                'There was some issue in creating user',
+                StatusCodes.INTERNAL_SERVER_ERROR
+            )
         }
     }
 
@@ -21,8 +28,12 @@ class UserRepository {
             });
             return user;
         } catch (error) {
-            console.log("Something went wrong inside repository layer");
-            throw error;
+            throw new AppError(
+                'RepositoryError',
+                'Cannot get user by email',
+                'There was some issue in getting the user by email',
+                StatusCodes.INTERNAL_SERVER_ERROR
+            )
         }
     }
 
@@ -31,8 +42,12 @@ class UserRepository {
             const user = await User.findByPk(id)
             return user;
         } catch (error) {
-            console.log("Something went wrong inside repository layer");
-            throw error;
+            throw new AppError(
+                'RepositoryError',
+                'Cannot get user by id',
+                'There was some issue in gettting the user by id',
+                StatusCodes.INTERNAL_SERVER_ERROR
+            )
         }
     }
 
@@ -46,8 +61,12 @@ class UserRepository {
             });
             return user.hasRole(adminRole);
         } catch (error) {
-            console.log("Something went wrong on repository layer");
-            throw error;
+            throw new AppError(
+                'RepositoryError',
+                'Cannot get the role of the user is admin or not',
+                'There was some issue in getting the role',
+                StatusCodes.INTERNAL_SERVER_ERROR
+            )
         }
     }
 
@@ -61,8 +80,12 @@ class UserRepository {
             });
             return user.hasRole(adminRole);
         } catch (error) {
-            console.log("Something went wrong on repository layer");
-            throw error;
+            throw new AppError(
+                'RepositoryError',
+                'Cannot get the role of the user is airline bussiness or not',
+                'There was some issue in getting the role',
+                StatusCodes.INTERNAL_SERVER_ERROR
+            )
         }
     }
     

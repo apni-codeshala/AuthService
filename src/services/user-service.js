@@ -4,6 +4,7 @@ const Verifier = require('email-verifier')
 
 const { JWT_KEY, EMAIL_VERIFIER_KEY } = require('../config/serverConfig');
 const UserRepository = require('../repository/user-repository');
+const { ServiceError, AppError, ValidationError } = require('../utils/errors/index');
 
 const verifier = new Verifier(EMAIL_VERIFIER_KEY);
 
@@ -24,9 +25,10 @@ class UserService {
             const user = await this.userRepository.create({ ...data, isEmailVerified: isEmailVerify });
             return user;
         } catch (error) {
-            console.log("Something went wrong inside service layer");
-            console.log(error);
-            throw { error };
+            if(error.name == 'RepositoryError' || error.name == 'ValidationError') {
+                throw error;
+            }
+            throw new ServiceError();
         }
     }
 
@@ -35,8 +37,10 @@ class UserService {
             const result = jwt.sign(user, JWT_KEY, { expiresIn: '1d' });
             return result;
         } catch (error) {
-            console.log("Something went wrong in token creation");
-            throw error;
+            if(error.name == 'RepositoryError' || error.name == 'ValidationError') {
+                throw error;
+            }
+            throw new ServiceError();
         }
     }
 
@@ -45,8 +49,8 @@ class UserService {
             const response = jwt.verify(token, JWT_KEY);
             return response;
         } catch (error) {
-            console.log("Something went wrong in token validation");
-            throw error;
+            console.log('Error in verifying token')
+            throw new ServiceError();
         }
     }
 
@@ -54,8 +58,7 @@ class UserService {
         try {
             return bcrypt.compareSync(userInputPlainPassword, encryptedPassword);
         } catch (error) {
-            console.log("Something went wrong inside password comparison");
-            throw error;
+            throw new ValidationError();
         }
     }
 
@@ -80,7 +83,10 @@ class UserService {
 
         } catch (error) {
             console.log("Something went wrong inside sign in process");
-            throw error;
+            if(error.name == 'RepositoryError' || error.name == 'ValidationError') {
+                throw error;
+            }
+            throw new ValidationError();
         }
     }
 
@@ -100,7 +106,7 @@ class UserService {
             return user.id;
         } catch (error) {
             console.log("Something went wring in auth process");
-            throw error;
+            throw new ValidationError();
         }
     }
 
@@ -122,7 +128,10 @@ class UserService {
             return response;
         } catch (error) {
             console.log("Something went wrong inside service layer");
-            throw error;
+            if(error.name == 'RepositoryError' || error.name == 'ValidationError') {
+                throw error;
+            }
+            throw new ValidationError();
         }
     }
 
@@ -132,10 +141,13 @@ class UserService {
             return response;
         } catch (error) {
             console.log("Something went wrong inside service layer");
-            throw error;
+            if(error.name == 'RepositoryError' || error.name == 'ValidationError') {
+                throw error;
+            }
+            throw new ValidationError();
         }
     }
 
 }
 
-module.exports = UserService;
+module.exports = UserService; 
