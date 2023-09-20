@@ -2,10 +2,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const Verifier = require('email-verifier')
 
-const { JWT_KEY } = require('../config/serverConfig');
+const { JWT_KEY, EMAIL_VERIFIER_KEY } = require('../config/serverConfig');
 const UserRepository = require('../repository/user-repository');
 
-const verifier = new Verifier("at_t9Ypf4BWff7mcEc0ayTsGlZe5xWaY");
+const verifier = new Verifier(EMAIL_VERIFIER_KEY);
 
 class UserService {
 
